@@ -85,18 +85,20 @@ getReceiversAddress = async (event) => {
   console.log(this.state.receiverAddress);
   var sts;
   try{
-    sts = await contract.methods.checkPublicKey(this.state.receiverAddress).call();
+    sts = await contract.methods.checkPublicKey(event.target.value).call();
     console.log(sts);
-    if(sts == false)
-  {
-    this.setState({message:"Please ask the user to generate KeyPair or else the check the Receivers Address"});
+    if(sts == true)
+    {
+      this.setState({message:"valid receiver"});
+    }
+    else{
+      this.setState({message:"Please ask the user to generate KeyPair and try again later"});
+
+    }
   }
-  else
-    this.setState({message:""});  
-  } 
   catch(error){
     console.log("err");
-    //this.setState({message:"Please ask the user to generate KeyPair or else the check the Receivers Address"});
+    this.setState({message:"Enter a valid address"});
   }
   
   console.log(sts);
