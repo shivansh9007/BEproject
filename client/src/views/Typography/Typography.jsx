@@ -120,8 +120,54 @@ convertToBuffer = async (reader) => {
 };
   onSubmit = async(event) =>
   {
+    const { accounts, contract } = this.state;
     event.preventDefault();
+    console.log(this.state.buffer.toString());
+    const publickey = await contract.methods.getPublicKey(this.state.receiverAddress).call();
+    console.log(publickey);
+    const key = new NodeRSA();
+    key.importKey(publickey,'public');
+    const dataa= key.encrypt(this.state.buffer,'base64');
+    console.log(dataa)
+    key.importKey('-----BEGIN RSA PRIVATE KEY----- MIIBOgIBAAJBAMkKlRhr4eceJ30RadjRyJj8yk1ttuu74jEDNaJPXo1GjxoL7kms R2Q0BpVQzPvUfw84t6FIEtDtLOtyGG3TWTkCAwEAAQJBAIpEFfCa2d4LNhtlK4fs F+toCHaiG2kbaeBNlciQj7XW9Ysj1+DNRYi8bJs3xgAZF++G38BTxjUJbiSq8e/B yjUCIQDxwhL74djmiMpChtjIYrvEO9AKiC9UJOimggcXAnm5twIhANTidqTIkRbF d5UiETV71Zn883xga0XsUcAlJ0n9gESPAiB1xHmk89bKLnaAw9mUe+xF4nEswDx1 ++jNO+giQFV1rwIgBltg2ZjXpEtvP7fNtcAl57xC9RLYATWGV2uEmdQFEYcCIFtt O3jl9hHGY3MGariG5Cu5hZ8gD16OEUzurwcEYVUh -----END RSA PRIVATE KEY-----','private');
+    ipfs.files.add(Buffer.from(dataa),(error,result)=>{
+     
+      const link = "https://ipfs.io./ipfs/"+result[0].path;
+      console.log(link);
+      //console.log(key.decrypt(dataa,'utf8'));
+      this.setState({link : link},this.addData);
+      
+      fetch(link)
+  .then(
+    function(response) {
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+          response.status);
+        return;
+      }
+
+      // Examine the text in the response
+      response.text().then(function(data) {
+        console.log(data);
+        console.log(key.decrypt(data,'utf8'));
+
+
+      });
+    }
+  )
+  .catch(function(err) {
+    console.log('Fetch Error :-S', err);
+  });
+    })
+  }
+
+  addData = async() =>{
+    const { accounts, contract } = this.state;
+    console.log("eeee");
+    await contract.methods.addData(this.state.link,accounts[0],this.state.receiverAddress).send({from:accounts[0]});
+    console.log("done brp");
     
+
   }
   
 checkKey = async () => {
@@ -129,6 +175,8 @@ checkKey = async () => {
   const keyStatus = await contract.methods.checkPublicKey(accounts[0]).call();
   this.setState({ keyStatus: keyStatus })
   console.log(keyStatus);
+  const dattt = await contract.methods.getLinks(accounts[0]).call();
+    console.log(dattt);
 
 
 
