@@ -13,6 +13,7 @@ import getWeb3 from "../../utils/getWeb3";
 import SimpleStorageContract from "../../contracts/SimpleStorage.json";
 import { thead, tbody } from "variables/linkTable";
 import { async } from "q";
+import NodeRSA from "../../utils/rsa";
 
 
 class RegularTables extends React.Component {
@@ -23,7 +24,9 @@ class RegularTables extends React.Component {
         this.state = {
             tbodyc: [],
             privateKetStatus: 'Upload Private Key',
-            privateKey: ''
+            privateKey: '',
+            privateKeyValid: 'false',
+            msg:'Upload a valid private key. Guessing won\'t work'
         };
 
         this.uploadFile = this.uploadFile.bind(this);
@@ -69,7 +72,41 @@ class RegularTables extends React.Component {
             console.log('called');
         }
     };
+    decryptAndDownload = async(links,e) => {
+        e.preventDefault();
+        const pk = this.state.privateKey;
+        const pkstatus = this.state.privateKeyValid;
+        fetch(links)
+        .then(
+          function (response) {
+            if (response.status !== 200) {
+              console.log('Looks like there was a problem. Status Code: ' +
+                response.status);
+              return;
+            }
 
+            // Examine the text in the response
+            response.text().then(function (data) {
+              
+              if(pk!==null && pkstatus===true)
+              {
+                console.log(data);
+                  var key =new NodeRSA(pk)
+                  console.log();
+                  var fileDownload = require('js-file-download');
+                    fileDownload(key.decrypt(data, 'utf8'), links+".txt");
+
+              }
+              
+
+            });
+          }
+        )
+        .catch(function (err) {
+          console.log('Fetch Error :-S', err);
+        });
+
+    }
     uploadFile(event) {
         // var reader = new window.FileReader();
         // let file = event.target.files[0];
@@ -92,10 +129,24 @@ class RegularTables extends React.Component {
         reader.onload = async (event) => {
             // console.log(event.target.result)
             // var result = event.target.result;
+            const { accounts, contract } = this.state;
             self.setState({ privateKey: event.target.result });
             self.setState({ privateKetStatus: 'Uploaded' })
             console.log('private key from file')
             console.log(this.state.privateKey);
+            var keyPair = new NodeRSA(this.state.privateKey);
+            
+            var keyob = await contract.methods.getPublicKey(accounts[0]).call();
+            var keyfpk = keyPair.exportKey('public');
+            if(keyob===keyfpk)
+            {
+                this.setState({privateKeyValid:true});
+                this.setState({msg:'Valid private key'});
+            }
+            else{
+                this.setState({privateKeyValid:false});
+                this.setState({msg:'Upload a valid private key. Guessing won\'t work'});
+            }
 
         };
 
@@ -123,10 +174,13 @@ class RegularTables extends React.Component {
                                             <div style={{ textTransform: 'none' }}>
                                                 {this.state.privateKetStatus}
                                             </div>
-
+                                            
                                         </label>
                                         <input id="file-input" type="file" style={{ display: 'none' }} onChange={this.uploadFile} />
                                     </h6>
+                                    <div>
+                                                <h4>{this.state.msg}</h4>
+                                            </div>
                                 </CardTitle>
                             </CardHeader>
                             <CardBody>
@@ -187,7 +241,7 @@ class RegularTables extends React.Component {
                                                             {links}
                                                         </td>
                                                         <td className="text-center">
-                                                            <a href={links} download >
+                                                            <a  href="#" onClick={(e) => this.decryptAndDownload(links, e)}   >
                                                                 Download
                               </a>
                                                         </td>

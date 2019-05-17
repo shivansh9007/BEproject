@@ -129,7 +129,7 @@ convertToBuffer = async (reader) => {
     key.importKey(publickey,'public');
     const dataa= key.encrypt(this.state.buffer,'base64');
     console.log(dataa)
-    key.importKey('-----BEGIN RSA PRIVATE KEY----- MIIBOgIBAAJBAMkKlRhr4eceJ30RadjRyJj8yk1ttuu74jEDNaJPXo1GjxoL7kms R2Q0BpVQzPvUfw84t6FIEtDtLOtyGG3TWTkCAwEAAQJBAIpEFfCa2d4LNhtlK4fs F+toCHaiG2kbaeBNlciQj7XW9Ysj1+DNRYi8bJs3xgAZF++G38BTxjUJbiSq8e/B yjUCIQDxwhL74djmiMpChtjIYrvEO9AKiC9UJOimggcXAnm5twIhANTidqTIkRbF d5UiETV71Zn883xga0XsUcAlJ0n9gESPAiB1xHmk89bKLnaAw9mUe+xF4nEswDx1 ++jNO+giQFV1rwIgBltg2ZjXpEtvP7fNtcAl57xC9RLYATWGV2uEmdQFEYcCIFtt O3jl9hHGY3MGariG5Cu5hZ8gD16OEUzurwcEYVUh -----END RSA PRIVATE KEY-----','private');
+    key.importKey('-----BEGIN RSA PRIVATE KEY----- MIIBOgIBAAJBAM7U8JkOovHx3XrJ9Dlfs2nKmjDtKKIPSWxo/2gowmcEha6F8s1v 474lXO+o9Pl9wzZORkvQXmAZyVK9ioqKH80CAwEAAQJATtkuv6qsw7+Ix36l9Blf tDzgezZt/xoEy6dbdsHTGqIXHAuN8Z4hwROrNfjzvOEkwYJPRGlHtez6jCQuymX5 AQIhAO/UpK/k3NMS1BW3SpRlI8gArR16p/Pnt9KfV2J8SSf5AiEA3MbAx6ageVss wauUTDDJcnPGM/p3ZSZxspH3oKbWc3UCIQCYyVgtcli34zvXpdBOX2x/Iucma5iJ yuoRtU8/P7x/SQIgPXxs/C1/y8yErntmlcGQmPt9W8SJs/X8/EqCuI8+cnECIGTd u+q4y+DtJtzBntGm0PEbLO1PbW8HGfcydzuhhjFI -----END RSA PRIVATE KEY-----','private');
     ipfs.files.add(Buffer.from(dataa),(error,result)=>{
      
       const link = "https://ipfs.io./ipfs/"+result[0].path;

@@ -148,7 +148,7 @@ class Transfer extends React.Component {
             // Examine the text in the response
             response.text().then(function (data) {
               console.log(data);
-              console.log(key.decrypt(data, 'utf8'));
+              //console.log(key.decrypt(data, 'utf8'));
 
 
             });
@@ -182,8 +182,9 @@ class Transfer extends React.Component {
   }
 
   downloadPrivateKey = async (toDownloadPrivatekey) => {
+    const { accounts, contract } = this.state;
     var fileDownload = require('js-file-download');
-    fileDownload(toDownloadPrivatekey, 'privatekey.txt');
+    fileDownload(toDownloadPrivatekey, accounts[0]+".txt");
   }
 
   render() {
