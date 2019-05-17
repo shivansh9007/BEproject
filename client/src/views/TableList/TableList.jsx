@@ -11,20 +11,27 @@ import {
 
 import getWeb3 from "../../utils/getWeb3";
 import SimpleStorageContract from "../../contracts/SimpleStorage.json";
-import { thead ,tbody} from "variables/general";
+import { thead, tbody } from "variables/linkTable";
 
 
 class RegularTables extends React.Component {
-  
-  getLinks = async()=>{
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      tbodyc: []
+    };
+  }
+
+  getLinks = async () => {
     const { accounts, contract } = this.state;
 
-    const tbody  = await contract.methods.getLinks(accounts[0]).call();
-    this.setState({tbody:tbody});
- }
- 
- componentDidMount = async () => {
-  try {
+    const tbodyc = await contract.methods.getLinks(accounts[0]).call();
+    this.setState({ tbodyc: tbodyc });
+  }
+
+  componentDidMount = async () => {
+    try {
       //   // Get network provider and web3 instance.
       const web3 = await getWeb3();
       console.log('idhar hich hai apun');
@@ -35,8 +42,8 @@ class RegularTables extends React.Component {
       console.log(networkId);
       const deployedNetwork = SimpleStorageContract.networks[networkId];
       const instance = new web3.eth.Contract(
-          SimpleStorageContract.abi,
-          deployedNetwork && deployedNetwork.address,
+        SimpleStorageContract.abi,
+        deployedNetwork && deployedNetwork.address,
       );
       console.log(instance);
       //   // Set web3, accounts, and contract to the state, and then proceed with an
@@ -44,25 +51,25 @@ class RegularTables extends React.Component {
       this.setState({ web3, accounts, contract: instance }, this.getLinks);
 
       //  
-  } catch (error) {
+    } catch (error) {
       //   // Catch any errors for any of the above operations.
       alert(
-          `Failed to load web3, accounts, or contract. Check console for details.`,
+        `Failed to load web3, accounts, or contract. Check console for details.`,
       );
       console.log('called');
-  }
-};
+    }
+  };
 
-  
-  
-  
-  
+
+
+
+
   render() {
     try {
-      console.log(this.state.tbody)
-      const dd = tbody;
+      console.log(tbody);
+      console.log(this.state.tbodyc);
     } catch (error) {
-      
+
     }
     return (
       <div className="content">
@@ -70,10 +77,10 @@ class RegularTables extends React.Component {
           <Col xs={12}>
             <Card>
               <CardHeader>
-                <CardTitle tag="h4">Simple Table</CardTitle>
+                <CardTitle tag="h4">Put upload private key box here</CardTitle>
               </CardHeader>
               <CardBody>
-                <Table responsive>
+                {/* <Table responsive>
                   <thead className="text-primary">
                     <tr>
                       {thead.map((prop, key) => {
@@ -103,13 +110,54 @@ class RegularTables extends React.Component {
                         </tr>
                       );
                     })}
-                   
+
+                  </tbody>
+                </Table> */}
+
+                <Table responsive>
+                  <thead className="text-primary">
+                    <tr>
+                      {thead.map((prop, key) => {
+                        if (key === thead.length - 1)
+                          return (
+                            <th key={key} className="text-center">
+                              {prop}
+                            </th>
+                          );
+                        return <th key={key}>{prop}</th>;
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      this.state.tbodyc.map((links, key) => {
+                        return (
+                          <tr key={key}>
+                            <td key={key} className="text-left">
+                              {links}
+                            </td>
+                            <td className="text-center">
+                              <a href={links} download >
+                                Download
+                              </a>
+                            </td>
+                            <td className="text-center">
+                              <a href={links} target="_blank">
+                                View
+                              </a>
+                            </td>
+                          </tr>
+                        );
+
+                      })
+                    }
+
                   </tbody>
                 </Table>
               </CardBody>
             </Card>
           </Col>
-          
+
         </Row>
       </div>
     );
