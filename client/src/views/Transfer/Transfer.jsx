@@ -10,7 +10,9 @@ import NodeRSA from "../../utils/rsa";
 import { async } from "q";
 class Transfer extends React.Component {
   state = {
-    fileName: 'Select Document'
+    fileName: 'Select Document',
+    transferMessage: 'Transfer Securely',
+    transferStatus: ''
   }
   componentDidMount = async () => {
     try {
@@ -158,6 +160,8 @@ class Transfer extends React.Component {
           console.log('Fetch Error :-S', err);
         });
     })
+    this.setState({ transferStatus: 'done' });
+    this.setState({ transferMessage: 'Transferred' });
   }
 
   addData = async () => {
@@ -165,6 +169,7 @@ class Transfer extends React.Component {
     console.log("eeee");
     await contract.methods.addData(this.state.link, accounts[0], this.state.receiverAddress).send({ from: accounts[0] });
     console.log("done brp");
+
 
 
   }
@@ -184,7 +189,7 @@ class Transfer extends React.Component {
   downloadPrivateKey = async (toDownloadPrivatekey) => {
     const { accounts, contract } = this.state;
     var fileDownload = require('js-file-download');
-    fileDownload(toDownloadPrivatekey, accounts[0]+".txt");
+    fileDownload(toDownloadPrivatekey, accounts[0] + ".txt");
   }
 
   render() {
@@ -226,9 +231,9 @@ class Transfer extends React.Component {
                     />
                     <Row>
                       <div className="update ml-auto mr-auto">
-                        <h2>
+                        <h4>
                           {this.state.message}
-                        </h2>
+                        </h4>
 
 
                       </div>
@@ -236,7 +241,7 @@ class Transfer extends React.Component {
 
                     <Row>
                       <div className="update ml-auto mr-auto">
-                        <Button type="submit" color="primary" round>Transfer Securely</Button>
+                        <Button type="submit" color={this.state.transferStatus ? 'success' : 'primary'} round>{this.state.transferMessage}</Button>
                       </div>
                     </Row>
                   </form>
